@@ -1,6 +1,7 @@
 id=debloat_apmods
 name=Debloat Universal V8.1
-version=V8.1
-versionCode=1
+version=8
+versionCode=20400
 author= | followme: Diman Ap on Spotify 🎵
 description=Elimina apps basura de tu ROM, creado por @artistaproducer canal de telegram: @apmods
+updateJson=https://raw.githubusercontent.com/kdrag0n/safetynet-fix/master/update.json

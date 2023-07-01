@@ -8,4 +8,9 @@ Telegram: [*t.me/apmods*](https://t.me/apmods)
 
 Autor: [*t.me/artistaproducer*](https://t.me/artistaproducer)
 
+Cambios:
+
++ Ahora podrá actualizar desde Magisk en caso dado que salga una nueva actualiacion de la Version Debloat
++ Actualiado script que mejora la busqueda y eliminacion de aplicaciones
+
  
