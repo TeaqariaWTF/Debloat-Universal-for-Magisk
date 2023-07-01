@@ -4,4 +4,4 @@ version=8
 versionCode=20400
 author= | followme: Diman Ap on Spotify 🎵
 description=Elimina apps basura de tu ROM, creado por @artistaproducer canal de telegram: @apmods
-updateJson=https://raw.githubusercontent.com/kdrag0n/safetynet-fix/master/update.json
+updateJson=https://raw.githubusercontent.com/artistaproducer/Debloat-Universal-for-Magisk/main/update.json
