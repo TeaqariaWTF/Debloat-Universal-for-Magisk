@@ -10,6 +10,8 @@ Autor 👉 [*t.me/artistaproducer*](https://t.me/artistaproducer)
 
 PayPal 👉 [*Donation*](https://paypal.me/apmodsgroup)
 
+👉 [*Github*](https://github.com/artistaproducer)
+
 Cambios:
 
 + Ahora podrá actualizar desde Magisk en caso dado que salga una nueva actualiacion de la Version Debloat

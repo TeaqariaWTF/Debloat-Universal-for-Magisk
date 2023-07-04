@@ -1,7 +1,7 @@
 id=debloat_apmods
 name=Debloat Universal
-version=8.5
-versionCode=20500
+version=8.7
+versionCode=20700
 author= | followme: Diman Ap on Spotify 🎵
 description=Elimina apps basura de tu ROM, creado por @artistaproducer canal de telegram: @apmods
 updateJson=https://raw.githubusercontent.com/artistaproducer/Debloat-Universal-for-Magisk/main/update.json
