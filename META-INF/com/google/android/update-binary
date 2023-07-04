@@ -1,18 +1,14 @@
 #!/sbin/sh
-#BY @apmods @artistaproducer t.me/apmods
 TMPDIR=/dev/tmp
 MOUNTPATH=/dev/magisk_img
 
-# Default permissions
 umask 022
 
-# Initial cleanup
 rm -rf $TMPDIR 2>/dev/null
 mkdir -p $TMPDIR
 
-# echo before loading util_functions
 ui_print() { echo "$1"; }
-#BY @apmods @artistaproducer t.me/apmods
+
 require_new_magisk() {
     ui_print "***********************************"
     ui_print " ✖️ Please install the latest Magisk! "
@@ -24,17 +20,12 @@ imageless_magisk() {
     [ $MAGISK_VER_CODE -gt 18100 ]
     return $?
 }
-#BY @apmods @artistaproducer t.me/apmods
-##########################################################################################
-# Environment
-##########################################################################################
 
 OUTFD=$2
 ZIPFILE=$3
 
 mount /data 2>/dev/null
-#BY @apmods @artistaproducer t.me/apmods
-# Load utility functions
+
 if [ -f /data/adb/magisk/util_functions.sh ]; then
     . /data/adb/magisk/util_functions.sh
     NVBASE=/data/adb
@@ -42,27 +33,18 @@ else
     require_new_magisk
 fi
 
-# Preperation for flashable zips
 setup_flashable
 
-# Mount partitions
 mount_partitions
 
-# Detect version and architecture
 api_level_arch_detect
-#BY @apmods @artistaproducer t.me/apmods
-# Setup busybox and binaries
+
 $BOOTMODE && boot_actions || recovery_actions
 
-##########################################################################################
-# Preparation
-##########################################################################################
-
-# Extract common files
 unzip -oj "$ZIPFILE" module.prop install.sh uninstall.sh 'common/*' -d $TMPDIR >&2
 
 [ ! -f $TMPDIR/install.sh ] && abort "! Unable to extract zip file!"
-# Load install script
+
 . $TMPDIR/install.sh
 
 if imageless_magisk; then
@@ -75,28 +57,20 @@ else
     mount_magisk_img
     MODULEROOT=$MOUNTPATH
 fi
-#BY @apmods @artistaproducer t.me/apmods
+
 MODID=$(grep_prop id $TMPDIR/module.prop)
 MODPATH=$MODULEROOT/$MODID
 
 print_modname
 sleep 2
-##########################################################################################
-# Install
-##########################################################################################
-logica
-# Create mod paths
 
-#BY @apmods @artistaproducer t.me/apmods
-##########################################################################################
-# Finalizing
-##########################################################################################
-#BY @apmods @artistaproducer t.me/apmods
+logica
+
 cd /
 imageless_magisk || unmount_magisk_img
 $BOOTMODE || recovery_cleanup
 rm -rf $TMPDIR $MOUNTPATH
-#BY @apmods @artistaproducer t.me/apmods
+
 ui_print "  🌀 Realizado ✔️  "
 sleep 2
 nohup am start -a android.intent.action.VIEW -d https://paypal.me/apmodsgroup >/dev/null 2>&1 &

@@ -14,7 +14,6 @@ SKIPMOUNT=false
 PROPFILE=false
 POSTFSDATA=false
 LATESTARTSERVICE=false
-#BY @apmods @artistaproducer t.me/apmods
 print_modname() {
     ui_print " "
     ui_print "  ****************************"
@@ -762,12 +761,10 @@ OXIGEN="
 /system/system_ext/priv-app/PixelSetupWizard
 /system/system_ext/priv-app/SetupWizard
 "
-#BY @apmods @artistaproducer t.me/apmods
 set_permissions() {
     set_perm_recursive $MODPATH 0 0 0755 0644
 }
-#BY @apmods @artistaproducer t.me/apmodsrtistaproducer t.me/apmods
-#BY @apmods @artistaproducer t.me/apmods
+
 logica() {
     rm -rf $MODPATH 2>/dev/null
     mkdir -p $MODPATH
@@ -775,61 +772,52 @@ logica() {
     SYSTEM_EXT=/system/system_ext
     PRODUCT=/system/product
     MY_HEY=/my_heytap
-    #BY @apmods @artistaproducer t.me/apmods
+
     if [ -e $SYSTEM/app/miuisystem ] || [ -e $SYSTEM_EXT/app/miuisystem ] || [ -e $SYSTEM_EXT/priv-app/MiuiSystemUIPlugin ] || [ -e $PRODUCT/app/MIUISystemUIPlugin ] || [ -e $SYSTEM/app/miui]; then
         ui_print ""
-        ui_print "  🌀 MIUI Detectado ✔️"
+        ui_print "🌀 MIUI Detectado ✔️"
         if [ -e $SYSTEM/priv-app/MiLauncherGlobal ]; then
             ui_print ""
-            ui_print "  🚨 MIUI Global Detectado"
+            ui_print "🚨 MIUI Global Detectado"
             ui_print ""
-            ui_print "     despues de reiniciar el dispositivo  "
-            ui_print "     si aun quedan algunas apps, desinstale normalmente!!"
+            ui_print "despues de reiniciar el dispositivo"
+            ui_print "si aun quedan algunas apps, desinstale normalmente!!"
             ui_print ""
         fi
-        ui_print "  🌀 Eliminando Apps 🕗"
-        # Handle replace folders miui
+        ui_print "🌀 Eliminando Apps 🕗"
         for TARGET in $MIUIREPLACE; do
             mktouch $MODPATH$TARGET/.replace
         done
-        ui_print "  🌀 Apps eliminadas ✔️ "
+        ui_print "🌀 Apps eliminadas ✔️"
     else
         ui_print ""
-        ui_print "  🌀 AOSP Detectado ✔️"
+        ui_print "🌀 AOSP Detectado ✔️"
         if [ -e $MY_HEY ]; then
             for TARGET in $OXIGEN; do
                 mktouch $MODPATH$TARGET/.replace
             done
         fi
-        ui_print "  🌀 Eliminando Apps 🕗"
-        # Handle replace folders aosp
+        ui_print "🌀 Eliminando Apps 🕗"
         for TARGET in $AOSP_REPLACE; do
             mktouch $MODPATH$TARGET/.replace
         done
-        ui_print "  🌀 Apps eliminadas ✔️ "
+        ui_print "🌀 Apps eliminadas ✔️"
     fi
 
-    #BY @apmods @artistaproducer t.me/apmods
-    # Remove placeholder
     rm -f $MODPATH/system/placeholder 2>/dev/null
 
-    # Custom uninstaller
     [ -f $TMPDIR/uninstall.sh ] && cp -af $TMPDIR/uninstall.sh $MODPATH/uninstall.sh
 
-    # Auto Mount
     if imageless_magisk; then
         $SKIPMOUNT && touch $MODPATH/skip_mount
     else
         $SKIPMOUNT || touch $MODPATH/auto_mount
     fi
 
-    # prop files
     $PROPFILE && cp -af $TMPDIR/system.prop $MODPATH/system.prop
-    #BY @apmods @artistaproducer t.me/apmods
-    # Module info
+
     cp -af $TMPDIR/module.prop $MODPATH/module.prop
     if $BOOTMODE; then
-        # Update info for Magisk Manager
         if imageless_magisk; then
             mktouch $NVBASE/modules/$MODID/update
             cp -af $TMPDIR/module.prop $NVBASE/modules/$MODID/module.prop
@@ -839,12 +827,10 @@ logica() {
         fi
     fi
 
-    # post-fs-data mode scripts
     $POSTFSDATA && cp -af $TMPDIR/post-fs-data.sh $MODPATH/post-fs-data.sh
-    #BY @apmods @artistaproducer t.me/apmods
-    # service mode scripts
+
     $LATESTARTSERVICE && cp -af $TMPDIR/service.sh $MODPATH/service.sh
-    ui_print "  🌀 Configurando permisos 🕗"
+    ui_print "🌀 Configurando permisos 🕗"
     set_permissions
-    ui_print "  🌀 Permisos configurados ✔️ "
+    ui_print "🌀 Permisos configurados ✔️"
 }
