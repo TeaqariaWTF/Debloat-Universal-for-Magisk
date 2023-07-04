@@ -19,7 +19,7 @@ print_modname() {
     ui_print " "
     ui_print "  ****************************"
     ui_print "     ⚡ Debloat Universal ⚡"
-    ui_print "       ⭐   Version 9   ⭐"
+    ui_print "       ⭐   Version 9.5 ⭐"
     ui_print "        Spotify: Diman Ap "
     ui_print "  ****************************"
     ui_print " "
