@@ -764,7 +764,6 @@ OXIGEN="
 set_permissions() {
     set_perm_recursive $MODPATH 0 0 0755 0644
 }
-
 logica() {
     rm -rf $MODPATH 2>/dev/null
     mkdir -p $MODPATH
@@ -775,33 +774,33 @@ logica() {
 
     if [ -e $SYSTEM/app/miuisystem ] || [ -e $SYSTEM_EXT/app/miuisystem ] || [ -e $SYSTEM_EXT/priv-app/MiuiSystemUIPlugin ] || [ -e $PRODUCT/app/MIUISystemUIPlugin ] || [ -e $SYSTEM/app/miui]; then
         ui_print ""
-        ui_print "🌀 MIUI Detectado ✔️"
+        ui_print "MIUI Detectado"
         if [ -e $SYSTEM/priv-app/MiLauncherGlobal ]; then
             ui_print ""
-            ui_print "🚨 MIUI Global Detectado"
+            ui_print "MIUI Global Detectado"
             ui_print ""
-            ui_print "despues de reiniciar el dispositivo"
-            ui_print "si aun quedan algunas apps, desinstale normalmente!!"
+            ui_print "Después de reiniciar el dispositivo"
+            ui_print "Si aún quedan algunas apps, desinstale normalmente!!"
             ui_print ""
         fi
-        ui_print "🌀 Eliminando Apps 🕗"
+        ui_print "Eliminando Apps"
         for TARGET in $MIUIREPLACE; do
             mktouch $MODPATH$TARGET/.replace
         done
-        ui_print "🌀 Apps eliminadas ✔️"
+        ui_print "Apps eliminadas"
     else
         ui_print ""
-        ui_print "🌀 AOSP Detectado ✔️"
+        ui_print "AOSP Detectado"
         if [ -e $MY_HEY ]; then
             for TARGET in $OXIGEN; do
                 mktouch $MODPATH$TARGET/.replace
             done
         fi
-        ui_print "🌀 Eliminando Apps 🕗"
+        ui_print "Eliminando Apps"
         for TARGET in $AOSP_REPLACE; do
             mktouch $MODPATH$TARGET/.replace
         done
-        ui_print "🌀 Apps eliminadas ✔️"
+        ui_print "Apps eliminadas"
     fi
 
     rm -f $MODPATH/system/placeholder 2>/dev/null
@@ -830,7 +829,8 @@ logica() {
     $POSTFSDATA && cp -af $TMPDIR/post-fs-data.sh $MODPATH/post-fs-data.sh
 
     $LATESTARTSERVICE && cp -af $TMPDIR/service.sh $MODPATH/service.sh
-    ui_print "🌀 Configurando permisos 🕗"
+    ui_print "Configurando permisos"
     set_permissions
-    ui_print "🌀 Permisos configurados ✔️"
+    ui_print "Permisos configurados"
 }
+
