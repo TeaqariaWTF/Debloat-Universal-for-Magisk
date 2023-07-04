@@ -1,77 +1,33 @@
 #!/sbin/sh
-TMPDIR=/dev/tmp
-MOUNTPATH=/dev/magisk_img
+
+#################
+# Initialization
+#################
 
 umask 022
 
-rm -rf $TMPDIR 2>/dev/null
-mkdir -p $TMPDIR
-
+# echo before loading util_functions
 ui_print() { echo "$1"; }
 
 require_new_magisk() {
-    ui_print "***********************************"
-    ui_print " ✖️ Please install the latest Magisk! "
-    ui_print "***********************************"
+    ui_print "*******"
+    ui_print " Please install Magisk v20.4+! "
+    ui_print "*******"
     exit 1
 }
 
-imageless_magisk() {
-    [ $MAGISK_VER_CODE -gt 18100 ]
-    return $?
-}
+#########################
+# Load util_functions.sh
+#########################
 
 OUTFD=$2
 ZIPFILE=$3
 
 mount /data 2>/dev/null
 
-if [ -f /data/adb/magisk/util_functions.sh ]; then
-    . /data/adb/magisk/util_functions.sh
-    NVBASE=/data/adb
-else
-    require_new_magisk
-fi
+[ -f /data/adb/magisk/util_functions.sh ] || require_new_magisk
+. /data/adb/magisk/util_functions.sh
+[ $MAGISK_VER_CODE -lt 20400 ] && require_new_magisk
 
-setup_flashable
-
-mount_partitions
-
-api_level_arch_detect
-
-$BOOTMODE && boot_actions || recovery_actions
-
-unzip -oj "$ZIPFILE" module.prop install.sh uninstall.sh 'common/*' -d $TMPDIR >&2
-
-[ ! -f $TMPDIR/install.sh ] && abort "! Unable to extract zip file!"
-
-. $TMPDIR/install.sh
-
-if imageless_magisk; then
-    $BOOTMODE && MODDIRNAME=modules_update || MODDIRNAME=modules
-    MODULEROOT=$NVBASE/$MODDIRNAME
-else
-    $BOOTMODE && IMGNAME=magisk_merge.img || IMGNAME=magisk.img
-    IMG=$NVBASE/$IMGNAME
-    request_zip_size_check "$ZIPFILE"
-    mount_magisk_img
-    MODULEROOT=$MOUNTPATH
-fi
-
-MODID=$(grep_prop id $TMPDIR/module.prop)
-MODPATH=$MODULEROOT/$MODID
-
-print_modname
-sleep 2
-
-logica
-
-cd /
-imageless_magisk || unmount_magisk_img
-$BOOTMODE || recovery_cleanup
-rm -rf $TMPDIR $MOUNTPATH
-
-ui_print "  🌀 Realizado ✔️  "
-sleep 2
-nohup am start -a android.intent.action.VIEW -d https://paypal.me/apmodsgroup >/dev/null 2>&1 &
+install_module
 exit 0
