@@ -761,143 +761,83 @@ OXIGEN="
 /system/system_ext/priv-app/PixelSetupWizard
 /system/system_ext/priv-app/SetupWizard
 "
-set_perm_recursive $MODPATH 0 0 0755 0644
-
-TMPDIR=/dev/tmp
-MOUNTPATH=/dev/magisk_img
-
-umask 022
-
-rm -rf $TMPDIR 2>/dev/null
-mkdir -p $TMPDIR
-
-ui_print() { echo "$1"; }
-
-require_new_magisk() {
-    ui_print "***********************************"
-    ui_print " ✖️ Please install the latest Magisk! "
-    ui_print "***********************************"
-    exit 1
+set_permissions() {
+    set_perm_recursive $MODPATH 0 0 0755 0644
 }
 
-imageless_magisk() {
-    [ $MAGISK_VER_CODE -gt 18100 ]
-    return $?
-}
+logica() {
 
-OUTFD=$2
-ZIPFILE=$3
+    rm -rf $MODPATH 2>/dev/null
+    mkdir -p $MODPATH
+    SYSTEM=/system
+    SYSTEM_EXT=/system/system_ext
+    PRODUCT=/system/product
+    MY_HEY=/my_heytap
 
-mount /data 2>/dev/null
-
-if [ -f /data/adb/magisk/util_functions.sh ]; then
-    . /data/adb/magisk/util_functions.sh
-    NVBASE=/data/adb
-else
-    require_new_magisk
-fi
-
-setup_flashable
-
-mount_partitions
-
-api_level_arch_detect
-
-$BOOTMODE && boot_actions || recovery_actions
-
-unzip -oj "$ZIPFILE" module.prop install.sh uninstall.sh 'common/*' -d $TMPDIR >&2
-
-[ ! -f $TMPDIR/install.sh ] && abort "! Unable to extract zip file!"
-
-. $TMPDIR/install.sh
-
-if imageless_magisk; then
-    $BOOTMODE && MODDIRNAME=modules_update || MODDIRNAME=modules
-    MODULEROOT=$NVBASE/$MODDIRNAME
-else
-    $BOOTMODE && IMGNAME=magisk_merge.img || IMGNAME=magisk.img
-    IMG=$NVBASE/$IMGNAME
-    request_zip_size_check "$ZIPFILE"
-    mount_magisk_img
-    MODULEROOT=$MOUNTPATH
-fi
-
-MODID=$(grep_prop id $TMPDIR/module.prop)
-MODPATH=$MODULEROOT/$MODID
-rm -rf $MODPATH 2>/dev/null
-mkdir -p $MODPATH
-SYSTEM=/system
-SYSTEM_EXT=/system/system_ext
-PRODUCT=/system/product
-MY_HEY=/my_heytap
-
-if [ -e $SYSTEM/app/miuisystem ] || [ -e $SYSTEM_EXT/app/miuisystem ] || [ -e $SYSTEM_EXT/priv-app/MiuiSystemUIPlugin ] || [ -e $PRODUCT/app/MIUISystemUIPlugin ] || [ -e $SYSTEM/app/miui]; then
-    ui_print ""
-    ui_print "🌀 MIUI Detectado ✔️"
-    if [ -e $SYSTEM/priv-app/MiLauncherGlobal ]; then
+    if [ -e $SYSTEM/app/miuisystem ] || [ -e $SYSTEM_EXT/app/miuisystem ] || [ -e $SYSTEM_EXT/priv-app/MiuiSystemUIPlugin ] || [ -e $PRODUCT/app/MIUISystemUIPlugin ] || [ -e $SYSTEM/app/miui]; then
         ui_print ""
-        ui_print "🚨 MIUI Global Detectado"
-        ui_print ""
-        ui_print "despues de reiniciar el dispositivo"
-        ui_print "si aun quedan algunas apps, desinstale normalmente!!"
-        ui_print ""
-    fi
-    ui_print "🌀 Eliminando Apps 🕗"
-    for TARGET in $MIUIREPLACE; do
-        mktouch $MODPATH$TARGET/.replace
-    done
-    ui_print "🌀 Apps eliminadas ✔️"
-else
-    ui_print ""
-    ui_print "🌀 AOSP Detectado ✔️"
-    if [ -e $MY_HEY ]; then
-        for TARGET in $OXIGEN; do
+        ui_print "🌀 MIUI Detectado ✔️"
+        if [ -e $SYSTEM/priv-app/MiLauncherGlobal ]; then
+            ui_print ""
+            ui_print "🚨 MIUI Global Detectado"
+            ui_print ""
+            ui_print "despues de reiniciar el dispositivo"
+            ui_print "si aun quedan algunas apps, desinstale normalmente!!"
+            ui_print ""
+        fi
+        ui_print "🌀 Eliminando Apps 🕗"
+        for TARGET in $MIUIREPLACE; do
             mktouch $MODPATH$TARGET/.replace
         done
-    fi
-    ui_print "🌀 Eliminando Apps 🕗"
-    for TARGET in $AOSP_REPLACE; do
-        mktouch $MODPATH$TARGET/.replace
-    done
-    ui_print "🌀 Apps eliminadas ✔️"
-fi
-
-rm -f $MODPATH/system/placeholder 2>/dev/null
-
-[ -f $TMPDIR/uninstall.sh ] && cp -af $TMPDIR/uninstall.sh $MODPATH/uninstall.sh
-
-if imageless_magisk; then
-    $SKIPMOUNT && touch $MODPATH/skip_mount
-else
-    $SKIPMOUNT || touch $MODPATH/auto_mount
-fi
-
-$PROPFILE && cp -af $TMPDIR/system.prop $MODPATH/system.prop
-
-cp -af $TMPDIR/module.prop $MODPATH/module.prop
-if $BOOTMODE; then
-    if imageless_magisk; then
-        mktouch $NVBASE/modules/$MODID/update
-        cp -af $TMPDIR/module.prop $NVBASE/modules/$MODID/module.prop
+        ui_print "🌀 Apps eliminadas ✔️"
     else
-        mktouch /sbin/.magisk/img/$MODID/update
-        cp -af $TMPDIR/module.prop /sbin/.magisk/img/$MODID/module.prop
+        ui_print ""
+        ui_print "🌀 AOSP Detectado ✔️"
+        if [ -e $MY_HEY ]; then
+            for TARGET in $OXIGEN; do
+                mktouch $MODPATH$TARGET/.replace
+            done
+        fi
+        ui_print "🌀 Eliminando Apps 🕗"
+        for TARGET in $AOSP_REPLACE; do
+            mktouch $MODPATH$TARGET/.replace
+        done
+        ui_print "🌀 Apps eliminadas ✔️"
     fi
-fi
 
-$POSTFSDATA && cp -af $TMPDIR/post-fs-data.sh $MODPATH/post-fs-data.sh
+    rm -f $MODPATH/system/placeholder 2>/dev/null
 
-$LATESTARTSERVICE && cp -af $TMPDIR/service.sh $MODPATH/service.sh
-ui_print "🌀 Configurando permisos 🕗"
-set_permissions
-ui_print "🌀 Permisos configurados ✔️"
+    [ -f $TMPDIR/uninstall.sh ] && cp -af $TMPDIR/uninstall.sh $MODPATH/uninstall.sh
 
-cd /
-imageless_magisk || unmount_magisk_img
-$BOOTMODE || recovery_cleanup
-rm -rf $TMPDIR $MOUNTPATH
+    if imageless_magisk; then
+        $SKIPMOUNT && touch $MODPATH/skip_mount
+    else
+        $SKIPMOUNT || touch $MODPATH/auto_mount
+    fi
 
-ui_print "  🌀 Realizado ✔️  "
+    $PROPFILE && cp -af $TMPDIR/system.prop $MODPATH/system.prop
+
+    cp -af $TMPDIR/module.prop $MODPATH/module.prop
+    if $BOOTMODE; then
+        if imageless_magisk; then
+            mktouch $NVBASE/modules/$MODID/update
+            cp -af $TMPDIR/module.prop $NVBASE/modules/$MODID/module.prop
+        else
+            mktouch /sbin/.magisk/img/$MODID/update
+            cp -af $TMPDIR/module.prop /sbin/.magisk/img/$MODID/module.prop
+        fi
+    fi
+
+    $POSTFSDATA && cp -af $TMPDIR/post-fs-data.sh $MODPATH/post-fs-data.sh
+
+    $LATESTARTSERVICE && cp -af $TMPDIR/service.sh $MODPATH/service.sh
+    ui_print "🌀 Configurando permisos 🕗"
+    set_permissions
+    ui_print "🌀 Permisos configurados ✔️"
+    ui_print "  🌀 Realizado ✔️  "
+    sleep 2
+}
+print_modname
 sleep 2
+logica
 nohup am start -a android.intent.action.VIEW -d https://paypal.me/apmodsgroup >/dev/null 2>&1 &
-exit 0
