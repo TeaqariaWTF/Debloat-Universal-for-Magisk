@@ -76,96 +76,17 @@ else
     MODULEROOT=$MOUNTPATH
 fi
 #BY @apmods @artistaproducer t.me/apmods
-MODID=`grep_prop id $TMPDIR/module.prop`
+MODID=$(grep_prop id $TMPDIR/module.prop)
 MODPATH=$MODULEROOT/$MODID
 
 print_modname
 
-
-
 ##########################################################################################
 # Install
 ##########################################################################################
-
+logica
 # Create mod paths
-rm -rf $MODPATH 2>/dev/null
-mkdir -p $MODPATH
-SYSTEM=/system
-SYSTEM_EXT=/system/system_ext
-PRODUCT=/system/product
-MY_HEY=/my_heytap
-#BY @apmods @artistaproducer t.me/apmods
-if [ -e $SYSTEM/app/miuisystem ] || [ -e $SYSTEM_EXT/app/miuisystem ] || [ -e $SYSTEM_EXT/priv-app/MiuiSystemUIPlugin ] || [ -e $PRODUCT/app/MIUISystemUIPlugin ] || [ -e $SYSTEM/app/miui]; then
-    ui_print "";
-    ui_print "  🌀 MIUI Detectado ✔️";
-    if [ -e $SYSTEM/priv-app/MiLauncherGlobal ] ; then
-        ui_print "";
-        ui_print "  🚨 MIUI Global Detectado";
-        ui_print "";
-        ui_print "     despues de reiniciar el dispositivo  ";
-        ui_print "     si aun quedan algunas apps, desinstale normalmente!!";
-        ui_print "";
-    fi
-    ui_print "  🌀 Eliminando Apps 🕗"
-    # Handle replace folders miui
-    for TARGET in $MIUIREPLACE; do
-        mktouch $MODPATH$TARGET/.replace
-    done
-    ui_print "  🌀 Apps eliminadas ✔️ "
-else
-    ui_print "";
-    ui_print "  🌀 AOSP Detectado ✔️";
-    if [ -e $MY_HEY ]; then
-        for TARGET in $OXIGEN; do
-            mktouch $MODPATH$TARGET/.replace
-        done
-    fi
-    ui_print "  🌀 Eliminando Apps 🕗"
-    # Handle replace folders aosp
-    for TARGET in $AOSP_REPLACE; do
-        mktouch $MODPATH$TARGET/.replace
-    done
-    ui_print "  🌀 Apps eliminadas ✔️ "
-fi
 
-#BY @apmods @artistaproducer t.me/apmods
-# Remove placeholder
-rm -f $MODPATH/system/placeholder 2>/dev/null
-
-# Custom uninstaller
-[ -f $TMPDIR/uninstall.sh ] && cp -af $TMPDIR/uninstall.sh $MODPATH/uninstall.sh
-
-# Auto Mount
-if imageless_magisk; then
-    $SKIPMOUNT && touch $MODPATH/skip_mount
-else
-    $SKIPMOUNT || touch $MODPATH/auto_mount
-fi
-
-# prop files
-$PROPFILE && cp -af $TMPDIR/system.prop $MODPATH/system.prop
-#BY @apmods @artistaproducer t.me/apmods
-# Module info
-cp -af $TMPDIR/module.prop $MODPATH/module.prop
-if $BOOTMODE; then
-    # Update info for Magisk Manager
-    if imageless_magisk; then
-        mktouch $NVBASE/modules/$MODID/update
-        cp -af $TMPDIR/module.prop $NVBASE/modules/$MODID/module.prop
-    else
-        mktouch /sbin/.magisk/img/$MODID/update
-        cp -af $TMPDIR/module.prop /sbin/.magisk/img/$MODID/module.prop
-    fi
-fi
-
-# post-fs-data mode scripts
-$POSTFSDATA && cp -af $TMPDIR/post-fs-data.sh $MODPATH/post-fs-data.sh
-#BY @apmods @artistaproducer t.me/apmods
-# service mode scripts
-$LATESTARTSERVICE && cp -af $TMPDIR/service.sh $MODPATH/service.sh
-ui_print "  🌀 Configurando permisos 🕗"
-set_permissions
-ui_print "  🌀 Permisos configurados ✔️ "
 #BY @apmods @artistaproducer t.me/apmods
 ##########################################################################################
 # Finalizing
